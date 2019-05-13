@@ -9,10 +9,10 @@
 # version: 0.4
 
 # redirect all IO to a logfile
-mkdir -p /usr/local/var/log
-exec &>/usr/local/var/log/locationchanger.log
+#mkdir -p /usr/local/var/log
+#exec &>/usr/local/var/log/locationchanger.log
 # redirect all IO to /dev/null (comment this in if you don#t want to write to logfile)
-#exec 1>/dev/null 2>/dev/null
+exec 1>/dev/null 2>/dev/null
 
 # get a little breather before we get data for things to settle down
 sleep 2
@@ -28,30 +28,24 @@ LOCATION=
 # LOCATIONS
 # (use to be used Location name here)
 # =============================================
-Location_Automatic="Automatic"
-Location_Home="Home"
-Location_Work="Company Intranet"
+Location_Internal="Interno"
+Location_External="Externo"
 
 # SSIDS
 # =====
-SSID_TelekomPublic=Telekom
-SSID_Home=HomeSSID
-SSID_Work=WorkSSID
-
+SSID_VPN=1153rwfgtwcp08
 
 # SSID -> LOCATION mapping
 case $SSID in
-	$SSID_TelekomPublic ) LOCATION="$Location_Automatic";;
-	$SSID_Home          ) LOCATION="$Location_Home";;
-	$SSID_Work  ) LOCATION="$Location_Work";;
-	# ... add more here
+	$SSID_VPN ) LOCATION="$Location_Internal";;
+  * ) LOCATION="$Location_External"
 esac
 	REASON="SSID changed to $SSID"
 
 
 # still didn't get a location -> use Location_Automatic
 if [ -z "$LOCATION" ]; then
-	LOCATION="$Location_Automatic"
+	LOCATION="$Location_External"
 	REASON="Automatic Fallback"
 fi
 
@@ -59,18 +53,13 @@ fi
 scselect "$LOCATION"
 
 case $LOCATION in
-	$Location_Automatic )
-		osascript -e 'display notification "Network Location Changed to Automatic" with title "Network Location Changed"'
+	$Location_External )
+		osascript -e 'display notification "Network Location Changed to Externo" with title "Network Location Changed"'
 	;;
 
-	$Location_Work )
-		osascript -e 'display notification "Network Location Changed to Work" with title "Network Location Changed"'
+	$Location_Internal )
+		osascript -e 'display notification "Network Location Changed to Interno" with title "Network Location Changed"'
 	;;
-
-	$Location_Home )
-		osascript -e 'display notification "Network Location Changed to Home" with title "Network Location Changed"'
-	;;
-	# ... add more here
 esac
 
 echo "--> Location Changer: $LOCATION - $REASON"
